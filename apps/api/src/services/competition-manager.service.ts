@@ -361,25 +361,44 @@ export class CompetitionManager {
       sort: dbSort,
     };
     const isComputedSort = computedSort !== undefined;
+
+    let start = Date.now();
+
     const { agents, total } = await findByCompetition(
       competitionId,
       dbQueryParams,
       isComputedSort,
     );
 
+    let end = Date.now();
+
+    console.log("\n\n\n");
+    console.log("findByCompetition:", end - start);
+
+    start = Date.now();
     // Get leaderboard data for the competition to get scores and positions
     const leaderboard = await this.getLeaderboard(competitionId);
+    end = Date.now();
+    console.log("getLeaderboard:", end - start);
+
+    start = Date.now();
     const leaderboardMap = new Map(
       leaderboard.map((entry, index) => [
         entry.agentId,
         { score: entry.value, position: index + 1 },
       ]),
     );
+    end = Date.now();
+    console.log("leaderboardMap:", end - start);
 
+    start = Date.now();
     // Get vote counts for all agents in this competition
     const voteCountsMap =
       await this.voteManager.getVoteCountsByCompetition(competitionId);
+    end = Date.now();
+    console.log("getVoteCountsByCompetition:", end - start);
 
+    start = Date.now();
     // Build the response with agent details and competition data using bulk metrics
     const agentIds = agents.map((agent) => agent.id);
     const currentValues = new Map(
@@ -389,14 +408,20 @@ export class CompetitionManager {
         return [agent.id, score];
       }),
     );
+    end = Date.now();
+    console.log("agents mappings:", end - start);
 
+    start = Date.now();
     // Calculate metrics for all agents efficiently using bulk method
     const bulkMetrics = await this.calculateBulkAgentMetrics(
       competitionId,
       agentIds,
       currentValues,
     );
+    end = Date.now();
+    console.log("calculateBulkAgentMetrics:", end - start);
 
+    start = Date.now();
     // Build the response with agent details and competition data
     const competitionAgents = agents.map((agent) => {
       const isActive = agent.status === "active";
@@ -428,7 +453,10 @@ export class CompetitionManager {
         voteCount: voteCount,
       };
     });
+    end = Date.now();
+    console.log("second mapping:", end - start);
 
+    start = Date.now();
     // Apply post-processing sorting and pagination, if needed
     const finalCompetitionAgents = isComputedSort
       ? applySortingAndPagination(
@@ -438,7 +466,10 @@ export class CompetitionManager {
           offset,
         )
       : competitionAgents;
+    end = Date.now();
+    console.log("post processed sort:", end - start);
 
+    console.log("\n\n\n");
     return {
       agents: finalCompetitionAgents,
       total,
@@ -539,11 +570,14 @@ export class CompetitionManager {
 
     try {
       // Get all portfolio snapshots for all agents in one query using repository
+      // TODO: With 500 agents who have each made one trade in a brand new competition
+      //    this returns about 250,000 results and that number will increase as the
+      //    competition goes on.
       const allSnapshots = await getBulkAgentPortfolioSnapshots(
         competitionId,
         agentIds,
       );
-
+      console.log("snapshots.length", allSnapshots.length);
       // Group snapshots by agent ID with proper typing
       const snapshotsByAgent = new Map<string, typeof allSnapshots>();
       for (const snapshot of allSnapshots) {

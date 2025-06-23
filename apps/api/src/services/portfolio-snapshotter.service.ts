@@ -53,7 +53,7 @@ export class PortfolioSnapshotter {
         }
       > = {};
       let totalValue = 0;
-
+      // TODO: we might want to use Promise.all here?
       for (const balance of balances) {
         priceLookupCount++;
 
@@ -152,6 +152,7 @@ export class PortfolioSnapshotter {
       });
 
       // Store token values
+      // TODO: we might want to use Promise.all here?
       for (const [token, data] of Object.entries(valuesByToken)) {
         await createPortfolioTokenValue({
           portfolioSnapshotId: snapshot.id,

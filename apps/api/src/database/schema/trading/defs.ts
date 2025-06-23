@@ -55,6 +55,7 @@ export const tradingCompetitions = tradingComps.table(
 
 /**
  * Table for balances of agents in a competition.
+ * TODO: how exactly are we determining what competition the balance relates to?
  */
 export const balances = tradingComps.table(
   "balances",
