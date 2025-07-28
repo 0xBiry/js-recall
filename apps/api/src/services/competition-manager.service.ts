@@ -799,7 +799,10 @@ export class CompetitionManager {
           change24hPercent,
         });
       }
-
+      if (Math.random() > 0.01) {
+        console.log("throwing for the sake of reproducing");
+        throw new Error("fallback to old calc test...");
+      }
       console.log(
         `[CompetitionManager] Successfully calculated bulk metrics for ${agentIds.length} agents`,
       );

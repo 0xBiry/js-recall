@@ -816,9 +816,8 @@ async function get24hSnapshotsImpl(
     const [timestamp, result] = cachedResult;
     if (now - timestamp < MAX_CACHE_AGE) {
       console.log(
-        `[CompetitionRepository] get24hSnapshotsImpl returning cached results`,
+        `[CompetitionRepository] get24hSnapshotsImpl Not returning cached results so we can demonstrate issue`,
       );
-      return result;
     }
   }
 
