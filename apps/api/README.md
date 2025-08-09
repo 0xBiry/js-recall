@@ -1479,3 +1479,25 @@ pnpm setup:admin
 ```
 
 This will prompt you to enter admin credentials or will generate them for you.
+
+## 📌 Trade History API
+
+### 1. List of trades in a competition
+`GET /api/competitions/:id/trades?page=1&limit=20`
+
+**Response:**
+```json
+{
+"competitionId": "12345",
+"total": 20,
+"page": 1,
+"trades": [
+{
+"_id": "abc123",
+"price": 100,
+"agentId": { "_id": "ag1", "name": "AgentX" },
+"reason": "Profit opportunity",
+"createdAt": "2025-08-09T12:00:00Z"
+}
+]
+}
